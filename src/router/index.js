@@ -34,9 +34,13 @@ import lock from './modules/lock'
 import home from './modules/home'
 import test from './modules/test'
 
+import system from './modules/system'
+export const fixedRoutes = [...home,...system]
+
+
 /* 菜单栏的路由 */
-// 固定菜单
-export const fixedRoutes = [...home]
+// // 固定菜单
+// export const fixedRoutes = [...home]
 // 动态菜单
 export const asyncRoutes = [...test]
 
