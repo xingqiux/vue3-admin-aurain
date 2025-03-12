@@ -94,7 +94,7 @@
             <el-form-item label="头像">
                 <el-upload
                     class="avatar-uploader"
-                    action="/admin/system/fileUpload"
+                    :action="uploadUrl"
                     :show-file-list="false"
                     :on-success="handleAvatarSuccess"
                     :headers="headers"
@@ -150,6 +150,8 @@ import {
 } from '@/api/sysuser';
 import { GetAllRoleList } from '@/api/sysRole';
 
+// 定义上传URL
+const uploadUrl = ref('http://localhost:8501/admin/system/fileUpload');
 // 表格数据
 const list = ref([]);
 // 分页相关
