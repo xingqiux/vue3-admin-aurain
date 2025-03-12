@@ -4,8 +4,8 @@ import request from '@/utils/request'
 export const GetSysRoleListByPage = (pageNum , pageSize , queryDto) => {
     return request({
         url: '/admin/system/sysRole/findByPage/' + pageNum + "/" + pageSize,
-        method: 'post',
-        data: queryDto
+        method: 'get',
+        params: queryDto
     })
 }
 
@@ -31,5 +31,14 @@ export const DeleteSysRoleById = (roleId) => {
     return request({
         url: '/admin/system/sysRole/deleteById/' + roleId,
         method: 'delete'
+    })
+}
+
+
+// 查询所有角色及用户已分配角色
+export const GetAllRoleList = (userId) => {
+    return request({
+        url: '/admin/system/sysRole/findAllRoles/' + userId,
+        method: 'get'
     })
 }

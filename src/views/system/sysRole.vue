@@ -116,10 +116,11 @@ const resetData = () => {
 
 // 远程调用后端分页查询接口
 const fetchData = async () => {
+    console.log(queryDto.value)
     try {
         const { data, code, message } = await GetSysRoleListByPage(pageParams.value.page, pageParams.value.limit, queryDto.value);
         if (code === 200) {
-            list.value = data.list;
+            list.value = data.records;
             total.value = data.total;
         } else {
             ElMessage.error(message || '获取角色列表失败');
