@@ -4,36 +4,26 @@
         <el-form label-width="70px" size="small">
             <el-row>
                 <el-col :span="12">
-                <el-form-item label="关键字">
-                    <el-input
-                    v-model="queryDto.keyword"
-                    style="width: 100%"
-                    placeholder="用户名、姓名、手机号码"
-                    ></el-input>
-                </el-form-item>
+                    <el-form-item label="关键字">
+                        <el-input v-model="queryDto.keyword" style="width: 100%" placeholder="用户名、姓名、手机号码"></el-input>
+                    </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                <el-form-item label="创建时间">
-                    <el-date-picker
-                    v-model="createTimes"
-                    type="daterange"
-                    range-separator="To"
-                    start-placeholder="开始时间"
-                    end-placeholder="结束时间"
-                    format="YYYY-MM-DD"
-                    value-format="YYYY-MM-DD"
-                    />
-                </el-form-item>
+                    <el-form-item label="创建时间">
+                        <el-date-picker v-model="createTimes" type="daterange" range-separator="To"
+                            start-placeholder="开始时间" end-placeholder="结束时间" format="YYYY-MM-DD"
+                            value-format="YYYY-MM-DD" />
+                    </el-form-item>
                 </el-col>
             </el-row>
             <el-row style="display:flex">
                 <el-button type="primary" size="small" @click="searchSysUser">
-                搜索
+                    搜索
                 </el-button>
                 <el-button size="small" @click="resetData">重置</el-button>
             </el-row>
         </el-form>
-    </div>  
+    </div>
 
     <!--添加按钮-->
     <div class="tools-div">
@@ -66,45 +56,36 @@
         </el-table-column>
     </el-table>
 
-    <el-pagination
-        v-model:current-page="pageParams.page"
-        v-model:page-size="pageParams.limit"
-        :page-sizes="[10, 20, 50, 100]"
-        @size-change="fetchData"
-        @current-change="fetchData"
-        layout="total, sizes, prev, pager, next"
-        :total="total"
-    />
+    <el-pagination v-model:current-page="pageParams.page" v-model:page-size="pageParams.limit"
+        :page-sizes="[10, 20, 50, 100]" @size-change="fetchData" @current-change="fetchData"
+        layout="total, sizes, prev, pager, next" :total="total" />
 
     <!-- 添加/修改用户对话框 -->
     <el-dialog v-model="dialogVisible" title="添加或修改" width="40%">
         <el-form label-width="120px">
             <el-form-item label="用户名">
-                <el-input v-model="sysUser.username"/>
+                <el-input v-model="sysUser.username" />
             </el-form-item>
             <el-form-item v-if="sysUser.id == null" label="密码">
-                <el-input type="password" show-password v-model="sysUser.password"/>
+                <el-input type="password" show-password v-model="sysUser.password" />
             </el-form-item>
             <el-form-item label="姓名">
-                <el-input v-model="sysUser.name"/>
+                <el-input v-model="sysUser.name" />
             </el-form-item>
             <el-form-item label="手机">
-                <el-input v-model="sysUser.phone"/>
+                <el-input v-model="sysUser.phone" />
             </el-form-item>
             <el-form-item label="头像">
-                <el-upload
-                    class="avatar-uploader"
-                    :action="uploadUrl"
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :headers="headers"
-                >
+                <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+                    :on-success="handleAvatarSuccess" :headers="headers">
                     <img v-if="sysUser.avatar" :src="sysUser.avatar" class="avatar" />
-                    <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+                    <el-icon v-else class="avatar-uploader-icon">
+                        <Plus />
+                    </el-icon>
                 </el-upload>
             </el-form-item>
             <el-form-item label="描述">
-                <el-input v-model="sysUser.description"/>
+                <el-input v-model="sysUser.description" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submit">提交</el-button>
@@ -121,11 +102,15 @@
             </el-form-item>
 
             <el-form-item label="角色列表">
-                <el-checkbox-group v-model="userRoleIds">
-                    <el-checkbox v-for="role in allRoles" :key="role.id" :label="role.id">
+                <el-checkbox-group v-model="userRoleIds" >
+                    <el-checkbox 
+                    v-for="role in allRoles" 
+                    :key="role.id" 
+                    :label="String(role.id)">
                         {{ role.roleName }}
                     </el-checkbox>
                 </el-checkbox-group>
+
             </el-form-item>
 
             <el-form-item>
@@ -286,31 +271,50 @@ const handleAvatarSuccess = (response) => {
     }
 };
 
-// 显示分配角色对话框
+// 显示分配角色对话框时确保数据类型正确
 const showAssignRole = async (row) => {
-    sysUser.value = row;
-    dialogRoleVisible.value = true;
-    
-    // 获取所有角色和用户已分配角色
-    const { code, data } = await GetAllRoleList(row.id);
-    if (code === 200) {
-        allRoles.value = data.allRolesList;
-        userRoleIds.value = data.sysUserRoles;
-    }
+    sysUser.value = row
+    dialogRoleVisible.value = true
+
+    //得到所有角色
+    const {data} = await GetAllRoleList(row.id)
+    allRoles.value = data.allRolesList
+
+    //用户分配过的角色
+    userRoleIds.value = data.sysUserRoles.map(role => String(role.roleId)) .filter(Boolean) // 过滤空值
 };
 
 // 分配角色
 const doAssign = async () => {
-    const { code } = await DoAssignRoleToUser({
-        userId: sysUser.value.id,
-        roleIdList: userRoleIds.value
-    });
+
+     // 清理数据：移除无效值并确保字符串类型
+     const cleanRoleIds = userRoleIds.value
+        .map(id => String(id).trim())
+        .filter(id => id.length > 0)
     
-    if (code === 200) {
-        ElMessage.success('角色分配成功');
-        dialogRoleVisible.value = false;
+    let assignRoleVo = {
+        userId: String(sysUser.value.id),
+        roleIdList: [...new Set(cleanRoleIds)] // 去重
+    }
+
+    console.log("最终提交数据:", assignRoleVo) // 调试日志
+
+    const {code} = await DoAssignRoleToUser(assignRoleVo)
+    if(code === 200) {
+        ElMessage.success("操作成功")
+        dialogRoleVisible.value = false
+        fetchData()
     }
 };
+
+
+
+const handleRoleChange = (values) => {
+    userRoleIds.value = values
+        .filter(id => id != null)
+        .map(id => Number(id));
+};
+
 </script>
 
 <style scoped>

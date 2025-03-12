@@ -35,10 +35,19 @@ export const DeleteSysRoleById = (roleId) => {
 }
 
 
+// // 查询所有角色及用户已分配角色
+// export const GetAllRoleList = (userId) => {
+//     return request({
+//         url: '/admin/system/sysRole/findAllRoles/' + userId,
+//         method: 'get'
+//     })
+// }
+
 // 查询所有角色及用户已分配角色
 export const GetAllRoleList = (userId) => {
+    // 使用模板字符串避免隐式转换
     return request({
-        url: '/admin/system/sysRole/findAllRoles/' + userId,
+        url: `/admin/system/sysRole/findAllRoles/${userId}`,
         method: 'get'
     })
 }
