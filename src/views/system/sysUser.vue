@@ -289,8 +289,8 @@ const doAssign = async () => {
 
      // 清理数据：移除无效值并确保字符串类型
      const cleanRoleIds = userRoleIds.value
-        .map(id => String(id).trim())
-        .filter(id => id.length > 0)
+         .map(id => String(id).trim())
+         .filter(id => id.length > 0)
     
     let assignRoleVo = {
         userId: String(sysUser.value.id),
