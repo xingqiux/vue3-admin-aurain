@@ -76,7 +76,8 @@
                     label: 'title'
                         }" />
                 <el-form-item>
-                    <el-button type="primary">提交</el-button>
+                    <!-- 修改：添加提交按钮的点击事件 -->
+                    <el-button type="primary" @click="doAssign">提交</el-button>
                     <el-button @click="dialogMenuVisible = false">取消</el-button>
                 </el-form-item>
             </el-form>
@@ -86,9 +87,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { GetSysRoleListByPage, SaveSysRole, UpdateSysRole, DeleteSysRoleById } from '@/api/sysRole';
+import { GetSysRoleListByPage, SaveSysRole, UpdateSysRole, DeleteSysRoleById, GetSysRoleMenuIds, DoAssignMenuIdToSysRole } from '@/api/sysRole';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import{GetSysRoleMenuIds} from '@/api/sysRole';
 
 // 分页条总记录数
 const total = ref(0);
@@ -124,14 +124,48 @@ const tree = ref()
 // 默认选中的菜单数据集合
 let roleId = ref()
 
+// 添加：分配菜单提交方法
+const doAssign = async () => {
+    const checkedNodes = tree.value.getCheckedNodes(); // 获取选中的节点
+    const checkedNodesIds = checkedNodes.map(node => {  // 获取选中的节点的id
+        return {
+            id: node.id,
+            isHalf: 0
+        }
+    })
+        
+    // 获取半选中的节点数据，当一个节点的子节点被部分选中时，该节点会呈现出半选中的状态
+    const halfCheckedNodes = tree.value.getHalfCheckedNodes(); 
+    const halfCheckedNodesIds = halfCheckedNodes.map(node => {   // 获取半选中节点的id
+        return {
+            id: node.id,
+            isHalf: 1
+        }
+    })
+        
+    // 将选中的节点id和半选中的节点的id进行合并
+    const menuIds = [...checkedNodesIds, ...halfCheckedNodesIds]  
+    console.log(menuIds);
+
+    // 构建请求数据
+    const assignMenuDto = {
+        roleId: roleId.value,
+        menuIdList: menuIds
+    }
+ 
+    // 发送请求
+    await DoAssignMenuIdToSysRole(assignMenuDto);
+    ElMessage.success('操作成功')
+    dialogMenuVisible.value = false
+}
+
 const showAssignMenu = async (row) => { 
   dialogMenuVisible.value = true
-  roleId = String(row.id)
+  roleId.value = String(row.id)
 
+  const { data } = await GetSysRoleMenuIds(roleId.value)
 
-  const { data } = await GetSysRoleMenuIds(roleId)   // 请求后端地址获取所有的菜单数据，以及当前角色所对应的菜单数据
-//   sysMenuTreeList.value = data.sysMenuList
-
+  // 处理菜单树数据，确保 ID 为字符串类型
   sysMenuTreeList.value = data.sysMenuList.map(menu => ({
     ...menu,
     id: String(menu.id),
@@ -141,14 +175,11 @@ const showAssignMenu = async (row) => {
     }))
   }))
 
-  //   tree.value.setCheckedKeys(data.roleMenuIds)   // 进行数据回显
-
-  // 转换选中ID为字符串
-  const checkedIds = data.roleMenuIds.map(id => String(id))
+  // 处理选中的菜单 ID
+  const checkedIds = data.roleMenuIds.map(item => String(item.menuId))
   tree.value.setCheckedKeys(checkedIds)
-
-
 }
+
 
 // 页面加载完毕以后请求后端接口获取数据
 onMounted(() => {
