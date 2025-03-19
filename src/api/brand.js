@@ -2,7 +2,7 @@
 // src/api/brand.js
 import request from '@/utils/request'
 
- api_name = '/admin/product/brand'
+const api_name = '/admin/product/brand'
 
 export const GetBrandPageList = (page, limit) => {
   return request({

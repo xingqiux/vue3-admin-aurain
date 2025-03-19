@@ -80,7 +80,7 @@
   
   const fetchData = async () => {
     const { data } = await GetBrandPageList(pageParams.value.page, pageParams.value.limit)
-    list.value = data.list
+    list.value = data.records
     total.value = data.total
   }
   
