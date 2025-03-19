@@ -1,4 +1,3 @@
-// src/api/productSpec.js
 import request from '@/utils/request'
 
 const api_name = '/admin/product/productSpec'
@@ -35,4 +34,12 @@ export const DeleteProductSpecById = id => {
       url: `${api_name}/deleteById/${id}`,
       method: 'delete',
     })
+}
+
+// 查询所有的产品规格数据
+export const FindAllProductSpec = () => {
+  return request({
+    url: `${api_name}/findAll`,
+    method: 'get',
+  })
 }

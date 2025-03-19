@@ -116,40 +116,8 @@ import { GetCategoryBrandPageList, SaveCategoryBrand, UpdateCategoryBrandById, D
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 数据模型定义
-const brandList = ref([
-{
-        "id": 2,
-        "createTime": "2023-05-06 09:31:19",
-        "name": "华为",
-        "logo": "http://139.198.127.41:9000/sph/20230506/华为.png"
-    },
-    {
-        "id": 1,
-        "createTime": "2023-05-06 09:30:27",
-        "name": "小米",
-        "logo": "http://139.198.127.41:9000/sph/20230506/小米.png"
-    }
-])
-const list = ref([
-{
-    "id": 2,
-    "createTime": "2023-05-24 15:19:24",
-    "brandId": 1,
-    "categoryId": 99,
-    "categoryName": "定制服务",
-    "brandName": "小米",
-    "logo": "http://139.198.127.41:9000/sph/20230506/小米.png"
-  },
-  {
-    "id": 1,
-    "createTime": "2023-05-06 10:59:08",
-    "brandId": 2,
-    "categoryId": 76,
-    "categoryName": "UPS电源/t",
-    "brandName": "华为",
-    "logo": "http://139.198.127.41:9000/sph/20230506/华为.png"
-  }
-])
+const brandList = ref([])
+const list = ref([])
 const total = ref(0)
 const queryDto = ref({ brandId: '', categoryId: '' })
 const searchCategoryIdList = ref([])
@@ -199,7 +167,7 @@ const fetchData = async () => {
     pageParams.value.limit,
     queryDto.value
   )
-  list.value = data.list
+  list.value = data.records
   total.value = data.total
 }
 
