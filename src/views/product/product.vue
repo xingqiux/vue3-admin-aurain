@@ -607,6 +607,17 @@ const saveData = async () => {
 
 // 修改
 const updateData = async () => {
+    // 创建一个深拷贝以避免修改原始对象
+    const productToUpdate = JSON.parse(JSON.stringify(product.value))
+  
+  // 确保所有SKU的productId使用字符串格式
+  if (productToUpdate.productSkuList && productToUpdate.productSkuList.length > 0) {
+    productToUpdate.productSkuList.forEach(sku => {
+      // 确保所有大整数ID以字符串形式提交
+      if (sku.productId) sku.productId = sku.productId.toString()
+      if (sku.id) sku.id = sku.id.toString()
+    })
+  }
   console.log(product.value)
   await UpdateProductById(product.value)
   dialogVisible.value = false
@@ -690,9 +701,19 @@ const editShow = row => {
 
 const getById = async id => {
   const { data } = await GetProductById(id)
+      // 立即打印原始数据
+      console.error('原始API返回数据:', data)
+
+      console.error("处理前列表数据", data.productSkuList)
+    data.productSkuList.forEach(sku => {
+      console.error('处理中的数据:', sku.productId)
+        sku.productId = String(sku.productId)
+      })
+
+  
   product.value = data
-  // eslint-disable-next-line no-debugger
-  console.log(product.value)
+
+    console.error('处理后的数据:', data)
 
   //分类赋值
   categoryIdList.value = [ product.value.category1Id, product.value.category2Id, product.value.category3Id]
@@ -707,6 +728,16 @@ const getById = async id => {
   // 处理规格数据
   specValueList.value = JSON.parse(product.value.specValue)
 
+    // 添加以下代码确保SKU的thumbImg被正确加载
+  if (product.value.productSkuList && product.value.productSkuList.length > 0) {
+    product.value.productSkuList.forEach(sku => {
+      // 确保thumbImg属性存在，如果后端返回的SKU图片字段名不是thumbImg，则需要相应调整
+      if (!sku.thumbImg && sku.skuImageUrl) { // 假设后端可能使用skuImageUrl字段
+        sku.thumbImg = sku.skuImageUrl
+      }
+    })
+
+  }
   //处理sku
   // product.value.productSkuList.forEach(sku => {
   //   sku.skuSpec = sku.skuSpec.split(',').join(' * ')
